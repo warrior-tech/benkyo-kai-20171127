@@ -1,21 +1,67 @@
 <!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello Vue</title>
-  </head>
-  <body>
-    <div id="app">
-      <p>{{ message }}</p>
-    </div>
-    <script src="https://unpkg.com/vue"></script>
-    <script>
-      var app = new Vue({
-        el: "#app",
-        data: {
-          message: 'hello world'
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Hello Vue</title>
+  <style>
+    input {
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div>現在の件数は{{ totalNum }}件です</div>
+    <div v-if="todoList.length >= 1">達成率は{{ mileStone }}%です</div>
+    <input type="text" placeholder="新しいToDoを入力してください" v-model="newTodo" @keyup.enter="addTodo()">
+    <ul>
+      <li v-for="todo in todoList" :style="{ color: todo.completed ? 'green' : 'red' }">
+        <input type="checkbox" name="" v-model="todo.completed">
+        {{ todo.title }}
+        <span style="margin-left: 10px" @click="deleteTodo(todo)">x</span>
+      </li>
+    </ul>
+  </div>
+  <script src="https://unpkg.com/vue"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      computed: {
+        totalNum: function () {
+          return this.todoList.length
+        },
+        mileStone: function () {
+          var completedNum = this.todoList.filter(function(todo){
+            return todo.completed
+          }).length
+
+          if (!completedNum) return 0
+
+          return Math.floor((completedNum / this.totalNum) * 100)
         }
-      })
-    </script>
-  </body>
+      },
+      data: {
+        newTodo: null,
+        todoList: []
+      },
+      methods: {
+        addTodo: function() {
+          var newTodo = {
+            title: this.newTodo,
+            completed: false
+          }
+
+          this.todoList.push(newTodo)
+          this.newTodo = null
+        },
+        deleteTodo: function (todo) {
+          var index = this.todoList.indexOf(todo)
+          this.todoList.splice(index, 1)
+        }
+      }
+    })
+  </script>
+</body>
 </html>
